@@ -132,7 +132,7 @@ On this overview page, click "Launch." Here you will be prompted to create an en
 
 Now click on 'Launch Instances'. On the next page, you can click 'View Instances' at the bottom to go back to the EC2 >> Instances page where you can see the status of your instance at boot time.
 
-## Logging into your Instance
+## Logging into Your Instance
 
 On the EC2 >> Instances page, you can see your instance. To connect to it via SSH, right-click the instance and click 'Connect'.  You will then be shown a popup with instructions on how to use your key pair to SSH into the instance.  In this case, I am using this command to connect:
 
@@ -142,7 +142,7 @@ ssh -i "~/AmazonKeys/AWSKey.pem" ubuntu@ec2-35-167-139-94.us-west-2.compute.amaz
 
 Note that you must provide your own path to the key pair (AWSKey above) you created.  You'll also have to make sure it's permissions are '400' (AWS provides instructions on this too on the same popup).
 
-## Setting up your software tools
+## Setting up Your Software Tools
 
 Now you have a computer in the cloud!  Congratulations!  So what can we do with it?  Not much initially - first we'll have to install some software tools.
 
@@ -157,7 +157,7 @@ sudo apt-get update
 sudo apt-get install python3-pip
 ```
 
-Now you can `pip install` any other python packages you want.  Let's install jupyter:
+You can now `pip install` any other python packages you want.  Let's install jupyter:
 
 ```
 pip3 install jupyter
@@ -195,16 +195,16 @@ Congrats! Now you're up and running and can create a notebook.
 
 We can follow the instructions [here](https://www.rstudio.com/products/rstudio/download-server/) to install R and RStudio Server.  RStudio "Server" is probably different than the RStudio you have on your laptop as it's designed to be accessed over the web.
 
-First install R
+First, install R:
 
 ```
 sudo apt-get update
 sudo apt-get install r-base
 ```
 
-After running this you can run `R` and work with R in the command-line if you want.
+Once you ran this you can run `R` and work with R in the command-line if you want.
 
-Now install RStudio Server
+Install RStudio Server:
 
 ```
 sudo apt-get install gdebi-core
@@ -212,21 +212,20 @@ wget https://download2.rstudio.org/server/bionic/amd64/rstudio-server-1.2.1335-a
 sudo gdebi rstudio-server-1.2.1335-amd64.deb
 ```
 
-(Note, if you are reading this many months after Sept 2019, these commands may be out of date and you should follow [this link](https://www.rstudio.com/products/rstudio/download-server/) for the updated commands)
+(If you are reading this many months after Sept 2019, these commands may be out of date and you should follow [this link](https://www.rstudio.com/products/rstudio/download-server/) for the updated commands)
 
 Before launching the server, we need to set a password for our account.  To do this run the following command and choose a password.
 
 ```
 sudo passwd ubuntu
 ```
-
-Now we can start the server with:
+And now we can start the server with:
 
 ```
 rstudio-server start
 ```
 
-We can navigate to the running server in our web browser.  First get the external IP of your instance:
+Then, we can navigate to the running server in our web browser.  First get the external IP of your instance:
 
 <img src="images/instanceIP.png" alt="Instance IP Address">
 
@@ -248,7 +247,17 @@ Give the image a name and description and hit 'Create Image'.
 
 Now, on the left side of the dashboard, you can select 'AMIs' under the 'Images' heading and see the status of your image being created.  When the status goes from 'pending' to 'available', then you can launch new instances from this Image.
 
-# Billing
+# AWS ParallelCluster
+
+Once you're comfortable with launching your own instances, you may want to check out [AWS ParallelCluster](https://aws.amazon.com/blogs/opensource/aws-parallelcluster/). It's a relatively new (Released Nov 2018) service that let's you create a cluster of compute nodes in AWS.
+
+- Submit jobs using `qsub` like you would on a local cluster
+- AWS scales the number of active instances automatically
+- All instances can connect to the same file system
+
+# Appendix:
+
+## Billing
 
 It's important to be able to estimate how much running a job will cost.  AWS charges fall mainly in the following categories:
 
@@ -281,16 +290,6 @@ Current pricing for instance volumes can be [found here](https://aws.amazon.com/
 **4. Data Transfer**
 
 Lastly, there are charges for transferring data OUT of EC2 (transferring data IN is free).  Right now it's about $0.09 / GB for outbound transfers (details at bottom of [this page](https://aws.amazon.com/ec2/pricing/on-demand/)).  If your compute job processes lots of data, but the results are small in file size (e.g., aligning reads to produce a gene-count matrix) then this cost will be insignificant.  But, if your job results in the creation of lots of data - all of which you need to download when finished, it's important to plan for this charge.
-
-## AWS ParallelCluster
-
-Once you're comfortable with launching your own instances, you may want to check out [AWS ParallelCluster](https://aws.amazon.com/blogs/opensource/aws-parallelcluster/). It's a relatively new (Released Nov 2018) service that let's you create a cluster of compute nodes in AWS.
-
-- Submit jobs using `qsub` like you would on a local cluster
-- AWS scales the number of active instances automatically
-- All instances can connect to the same file system
-
-# Appendix:
 
 ## Example: Aligning RNA-seq Data
 
