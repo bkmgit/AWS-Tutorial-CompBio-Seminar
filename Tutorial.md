@@ -249,11 +249,149 @@ Now, on the left side of the dashboard, you can select 'AMIs' under the 'Images'
 
 # AWS ParallelCluster
 
-Once you're comfortable with launching your own instances, you may want to check out [AWS ParallelCluster](https://aws.amazon.com/blogs/opensource/aws-parallelcluster/). It's a relatively new (Released Nov 2018) service that let's you create a cluster of compute nodes in AWS.
+[AWS ParallelCluster](https://aws.amazon.com/blogs/opensource/aws-parallelcluster/) introduces in 2018 is an AWS supported Open Source cluster management tool that makes it easy for you to deploy and manage High Performance Computing (HPC) clusters in the AWS cloud.
 
-- Submit jobs using `qsub` like you would on a local cluster
-- AWS scales the number of active instances automatically
-- All instances can connect to the same file system
+It automatically sets up the required compute resources and a shared filesystem and offers a variety of batch schedulers such as AWS Batch, SGE, Torque, and Slurm. AWS ParallelCluster facilitates both quick start proof of concepts (POCs) and production deployments.
+
+## Installing AWS ParallelCluster
+
+### Linux/OSX
+
+```
+sudo pip install aws-parallelcluster
+```
+Windows support is experimental. For Windows see [here](https://aws-parallelcluster.readthedocs.io/en/latest/getting_started.html).
+
+## Configuring AWS ParallelCluster
+
+First you’ll need to setup your IAM credentials, see [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) for more information.
+
+```
+$ aws configure
+AWS Access Key ID [None]: AKIAIOSFODNN7EXAMPLE
+AWS Secret Access Key [None]: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+Default region name [us-east-1]: us-east-1
+Default output format [None]:
+```
+Once installed you will need to setup some initial config. The easiest way to do this is below:
+
+```
+$ pcluster configure
+```
+This configure wizard will prompt you for everything you need to create your cluster. You will first be prompted for your cluster template name, which is the logical name of the template you will create a cluster from.
+
+```
+Cluster Template [mycluster]:
+```
+Now, you will be presented with a list of valid AWS region identifiers. Choose the region in which you’d like your cluster to run.
+
+```
+Acceptable Values for AWS Region ID:
+    us-east-1
+    cn-north-1
+    ap-northeast-1
+    eu-west-1
+    ap-southeast-1
+    ap-southeast-2
+    us-west-2
+    us-gov-west-1
+    us-gov-east-1
+    us-west-1
+    eu-central-1
+    sa-east-1
+AWS Region ID []:
+```
+Choose a descriptive name for your VPC. Typically, this will be something like production or test.
+
+```
+VPC Name [myvpc]:
+```
+Next, you will need to choose a key pair that already exists in EC2 in order to log into your master instance. If you do not already have a key pair, refer to the EC2 documentation on [EC2 Key Pairs](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html).
+```
+Acceptable Values for Key Name:
+    keypair1
+    keypair-test
+    production-key
+Key Name []:
+```
+Choose the VPC ID into which you’d like your cluster launched.
+
+```
+Acceptable Values for VPC ID:
+    vpc-1kd24879
+    vpc-blk4982d
+VPC ID []:
+```
+Finally, choose the subnet in which you’d like your master server to run.
+
+```
+Acceptable Values for Master Subnet ID:
+    subnet-9k284a6f
+    subnet-1k01g357
+    subnet-b921nv04
+Master Subnet ID []:
+```
+## Creating your First Cluster
+
+Once all of those settings contain valid values, you can launch the cluster by running the create command:
+```
+$ pcluster create mycluster
+```
+The message “CREATE_COMPLETE” shows that the cluster created successfully. It also provided us with the public and private IP addresses of our master node. We’ll need this IP to log in.
+
+## Logging into Your Master Instance
+
+You’ll use your OpenSSH pem file to log into your master instance.
+```
+$ pcluster ssh hello-world -i /path/to/keyfile.pem
+```
+Once logged in, run the command ```qhost``` to ensure that your compute nodes are setup and configured.
+
+## Running Your First Job Using SGE
+
+Create a file called ```hellojob.sh``` with the following contents.
+
+```
+#!/bin/bash
+sleep 30
+echo "Hello World from $(hostname)"
+```
+Next, submit the job using ```qsub``` and ensure it runs.
+```
+$ qsub hellojob.sh
+Your job 1 ("hellojob.sh") has been submitted
+```
+Now, you can view your queue and check the status of the job.
+```
+$ qstat
+job-ID  prior   name       user         state submit/start at     queue                          slots ja-task-ID
+-----------------------------------------------------------------------------------------------------------------
+      1 0.55500 hellojob.s ec2-user     r     03/24/2015 22:23:48 all.q@ip-192-168-1-125.us-west     1
+```
+The job is currently in a running state. Wait 30 seconds for the job to finish and run qstat again.
+
+```
+$ qstat
+$
+```
+
+Now that there are no jobs in the queue, we can check for output in our current directory.
+
+```
+$ ls -l
+total 8
+-rw-rw-r-- 1 ec2-user ec2-user 48 Mar 24 22:34 hellojob.sh
+-rw-r--r-- 1 ec2-user ec2-user  0 Mar 24 22:34 hellojob.sh.e1
+-rw-r--r-- 1 ec2-user ec2-user 34 Mar 24 22:34 hellojob.sh.o1
+```
+
+Here, we see our job script, an “e1” and “o1” file. Since the e1 file is empty, there was no output to stderr. If we view the .o1 file, we can see any output from our job.
+
+```
+$ cat hellojob.sh.o1
+Hello World from ip-192-168-1-125
+```
+We can see that our job successfully ran on instance "ip-192-168-1-125".
 
 # Appendix:
 
