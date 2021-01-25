@@ -93,48 +93,48 @@ You do not have to create your own image - Amazon has already prepared many imag
 
 Note: Images are also referred to as **AMI**s (Amazon Machine Images).
 
-# Creating our first instance
+# Creating Our First Instance
 
-- Navigate to EC2
-- Select 'Instances' in the left menu-bar
-- Click the 'Launch Instance' button in them middle
+- You have to navigate to EC2;
+- Then, select "Instances" in the left menu-bar;
+- Click the "Launch Instance" button in the middle.
 
 <img src="images/LaunchInstance.PNG" alt="Launch Instance" width="500">
 
 **Step 1: Choose AMI**
-Here we choose the base AMI (image) for our instance.  Scroll until you see Ubuntu Server 18.04 and click 'Select' on the right.
+Here we choose the base AMI (image) for our instance. Please scroll until you see Ubuntu Server 18.04 and click "Select" on the right.
 
 **Step 2: Choose an Instance Type**
-Next we choose an instance type.  Here we get to decide how powerful our machine is.  The caveat is that more powerful machines cost more per hour.  To see pricing, follow [this link](https://aws.amazon.com/ec2/pricing/on-demand/).  Since we are just installing software, let's choose a lower-end instance, the 't2.micro'.  Then click 'Next: Configure Instance Details' in the bottom right.
+Next, we choose an instance type. Here we can decide how powerful our machine is. The caveat is that more powerful machines cost more per hour. To see the prices, follow [this link](https://aws.amazon.com/ec2/pricing/on-demand/). Since we are only installing software, let's choose a lower performance instance, the 't2.micro'. Then click on 'Next: Configure Instance Details' at the bottom right.
 
 **Step 3: Configure Instance**
-There are a lot of options on this page, but you can ignore most of them.  The one that is good to know about is the 'Request Spot Instances' option towards the top.  Don't click this now, but in the future, when running long jobs, you may want to select this option as spot instances can save a lot of money.  See the [appendix item on Spot Instances](#spot-instances) for info.  For now, just click 'Next' on the bottom right.
+There are many options on this page, but you can ignore most of them. The one that is good to know is the 'Request Spot Instances' option at the top. Do not click on it now, but in the future when you run long jobs, you should choose this option as spot instances can save you a lot of money. For more information, see the [appendix item on Spot Instances](#spot-instances). For now, just click "Next" at the bottom right.
 
 **Step 4: Add Storage**
-On this page, you can set the storage space for your instance.  Let's set this to 50 GB to give ourselves some room.
+On this page, you can set the storage space for your instance. Let's set this to 50 GB to give ourselves some room.
 
 **Step 5: Add Tags**
-On this page you can add tags.  This is only useful if you have many servers and you want to organize them all using tags.  Click Next.
+On this page you can add tags. This is only useful if you have many servers and you want to organize them all using tags. Click "Next".
 
 **Step 6: Configure Security Group**
-On this page you can define which ports are open for your instance.  By default, 22 will be open for SSH.  There will be a warning that any IP address can access your instance.  If you'd like you can fix this by specifying your device's IP address on this page to restrict access to your machine, but this isn't required.  
+On this page you can define which ports are open for your instance. By default, 22 will be open for SSH. There will be a warning that any IP address can access your instance. If you'd like you can fix this by specifying your device's IP address on this page to restrict access to your machine, but this isn't required.  
 
-We're going to open two more ports so that we can connect to a Jupyter notebook and R Studio Server on our instance.  Click "Add Rule" twice and set up the new rules as shown in the image:
+We're going to open two more ports so that we can connect to a Jupyter notebook and R Studio Server on our instance. Click "Add Rule" twice and set up the new rules as shown in the image:
 
 <img src="images/ports.png" alt="Configure Ports">
 
-Click 'Review and Launch' in the bottom right.
+Click "Review and Launch" in the bottom right.
 
 **Step 7: Review**
-On this summary page click 'Launch'.  Here it asks you to create an encrypted key pair for SSH.  Once you make a key pair, you can use the same one for future instances.  Since this is our first instance, select 'Create a new key pair' from the first dropdown, then give your key pair a name, e.g. 'AWSKey', and click "Download Key Pair".  Make sure to save the Key Pair .pem file somewhere where you won't lose it.  You can only download the key pair once, but you can always create new key pairs in the future if you lose the file.  
+On this overview page, click "Launch." Here you will be prompted to create an encrypted key pair for SSH. Once you have created a key pair, you can use the same for future instances. Since this is our first instance, select "Create a new key pair" from the first dropdown menu, give your key pair a name, such as "AWSKey", and click "Download Key Pair". Make sure you save the Key Pair.pem file somewhere you will not lose it. You can download the key pair only once, but you can always create new key pairs in the future if you lose the file.
 
 <img src="images/keypair.PNG" alt="KeyPair" width="500">
 
-Now click 'Launch Instances'.  On the next page, you can click 'View Instances' on the bottom to go back to the EC2 >> Instances page where you can see the status of your instance as it's booting.
+Now click on 'Launch Instances'. On the next page, you can click 'View Instances' at the bottom to go back to the EC2 >> Instances page where you can see the status of your instance at boot time.
 
 ## Logging into your Instance
 
-On the EC2 >> Instances page, you can see your instance.  To connect to it via SSH, right-click the instance and click 'Connect'.  You will then be shown a popup with instructions on how to use your key pair to SSH into the instance.  In this case, I am using this command to connect:
+On the EC2 >> Instances page, you can see your instance. To connect to it via SSH, right-click the instance and click 'Connect'.  You will then be shown a popup with instructions on how to use your key pair to SSH into the instance.  In this case, I am using this command to connect:
 
 ```
 ssh -i "~/AmazonKeys/AWSKey.pem" ubuntu@ec2-35-167-139-94.us-west-2.compute.amazonaws.com
