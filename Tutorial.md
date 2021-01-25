@@ -49,27 +49,28 @@ AWS is divided up into many services.
 
 Most of these are enterprise-grade features that we don't have to worry about.  The two services you should know about are:
 
-- **EC2**: "Elastic Compute Cloud", this is the service for renting compute time on the servers in Amazon's cloud
-- **S3**: "Simple Storage Service", this service is for storing data
+- **EC2**: "Elastic Compute Cloud", this is the service for renting compute time on the servers in Amazon's cloud.
+- **S3**: "Simple Storage Service", this service is for storing data.
 
 Everything we'll be doing here is within the **EC2** service.  
 
 To get to the EC2 dashboard, after logging in:
 
-- Click 'Services' on the toolbar in the upper-left
-- Navigate to "EC2" under the "Compute" section
+- Click 'Services' on the toolbar in the upper-left;
+- Then, navigate to "EC2" under the "Compute" section.
 
 ## Regions
 
-Most things you work with in AWS will be scoped to a 'Region'.  Basically, Amazon has datacenters all over the world and you can choose which one you want to use for renting servers and storing data.
+The instances you work with in AWS are scoped to a "region".
+Basically, Amazon has data centers all over the world, and you can choose which one you want to use for renting servers and storing data.
 
-If you were running a large website, you'd want servers in many regions for speed and redundancy.
+If you are running a large website, you would need servers in many regions for speed and redundancy.
 
-In our case, we just need to be aware that regions exist and how to select the 'current' region.  
+In our case, we just need to be aware that there are regions and how to choose the "current" region.
 
-Whenever you view a service, you are only showed the servers and data that are in the 'current' region.  You can see your region and switch it by looking at the dropdown in the upper-right corner (shown below).  
+When you view a service, you will only see the servers and data that are in the "current" region. You can see and change your region by looking at the dropdown in the upper right corner (see below).
 
-The choice of region isn't permanent in any sense - you can create servers in one region, then create some more in another region, and switch back and forth as you manage either group.  However, best to just pick a region close to you and remain in it.  If you ever sign on and all your servers seem to be missing - don't fret, you probably just have the wrong region selected.
+The choice of region is not permanent in any way - you can create servers in one region, then create a few more in another region, and switch back and forth while managing both groups. However, it's best to just choose a region near you and stay in it. If you ever log in and all your servers seem to be missing - do not worry, you probably just picked the wrong region.
 
 <img src="images/AWSRegions.PNG" alt="AWS Regions" width="300">
 
