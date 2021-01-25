@@ -79,17 +79,17 @@ The choice of region is not permanent in any way - you can create servers in one
 To understand why we need to create an Image, it's important to understand the AWS terminology:
 
 - **Instances**:  Each server (cloud computer) you provision (rent) is called an *instance*.
-- **Volume**:  A *volume* is the storage that can be attached to an instance.  Think of it like plugging a hard drive into a computer.  Every instance needs at least one volume that contains its operating system.
-- **Snapshot**:  A *snapshot* is a saved copy of a volume.  Imagine taking the entire contents of a hard drive and saving that to a file.
-- **Image**: An *image* is a saved copy of a volume that can be used to launch an instance. Every **Image** really just consists of a **Snapshot** + some other meta-data
+- **Volume**:  A *volume* is the storage that can be attached to an instance. Think of it like plugging a hard drive into a computer. Every instance needs at least one volume that contains its operating system.
+- **Snapshot**:  A *snapshot* is a saved copy of a volume. Imagine taking the entire contents of a hard drive and saving that to a file.
+- **Image**: An *image* is a saved copy of a volume that can be used to launch an instance. Every **Image** really just consists of a **Snapshot** plus some other meta-data.
 
-When you launch an instance, you select an image.  This image is copied onto the volume that is attached to the instance and then the instance is booted up.  The same image can be used to launch multiple volumes.
+When you start an instance, you select an image. This image is copied to the volume attached to the instance, and then the instance is booted. The same image can be used to boot multiple volumes.
 
 <img src="images/ImagesInstances.PNG" alt="Images And Instances" width="750">
 
 <img src="images/VolumesSnapshots.PNG" alt="Volumes and Snapshots" width="750">
 
-You don't have to create your own image - Amazon has many images with different operating systems already prepared.  However, if you use one of these, you'll have to install any extra software every time you create an instance.  Instead, we'll start with one of the base Amazon images, install some software, and then use it to create our own image.
+You do not have to create your own image - Amazon has already prepared many images with different operating systems. However, if you use one of them, you will need to install additional software every time you create an instance. Instead, we will start with one of Amazon's basic images, install some software, and then use it to create our own image.
 
 Note: Images are also referred to as **AMI**s (Amazon Machine Images).
 
