@@ -1,6 +1,6 @@
-# Intro to AWS
+# Intro to AWS and AWS for High Performance Computing (HPC)
 
-**Why use AWS for a computational task?**
+**Why use AWS for a Computational Task?**
 
 *There is no cloud - it's just someone else's computer.*
 
@@ -8,27 +8,27 @@ When we use a cloud service like AWS what we're actually doing is renting comput
 
 This can be useful for several reasons:
 
-1. You need to run something that will tie up your computer for a long time
-2. Similarly, running multiple processor-intensive jobs at the same time
-3. Compute tasks that require more RAM than you have on your laptop
+1. You need to run something that will tie up your computer for a long time;
+2. Similarly, running multiple processor-intensive jobs at the same time;
+3. Compute tasks that require more RAM than you have on your laptop.
 
-**Cloud vs. a Local Cluster**
+**Cloud vs Local Cluster**
 
 Compared to running on a local cluster (servers that are either run by the campus or by your research group), advantages of using AWS are:
 
-1. Full control over the servers (sudo access, install whatever you want)
-2. No need to wait for your jobs to run
-3. No limits to how much computing power you need (except cost)
+1. Full control over the servers (sudo access, install whatever you want);
+2. You don't need to wait for your jobs to run;
+3. You have no limits to how much computing power you need (except cost).
 
 However, this comes with some drawbacks, namely:
 
-1. (Again) Full control over the servers (you have to set up software yourself)
-2. Costs - paying for compute, storage, and transfering data
+1. (Again) Full control over the servers (you have to set up software yourself)!
+2. Costs - paying for compute, storage, and transfering data.
 
 So, in the end it'll be up to you to decide if leveraging AWS makes sense.
 
-To help you make that decision, this guide will show you how AWS can be used, what is involved in setting up a compute job, and how to estimate costs.  Other resources are available at Berkeley (including the Savio cluster) and the Berkeley Research Computing offers [free consulting](http://research-it.berkeley.edu/services/cloud-computing-support) to help you decide what to use for your project. *(Note: I'm not affiliated with Berkeley Research Computing - I just found their service while researching for this talk).*
-
+To help you make that decision, this guide will show you how AWS can be used, what is involved in setting up a compute job, and how to estimate costs.
+Other resources are available at Berkeley (including the Savio cluster) and the Berkeley Research Computing offers [free consulting](http://research-it.berkeley.edu/services/cloud-computing-support) to help you decide what to use for your project. *(Note: I'm not affiliated with Berkeley Research Computing - I just found their service while researching for this talk).*
 
 # AWS Basics
 
