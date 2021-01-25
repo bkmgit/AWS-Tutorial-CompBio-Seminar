@@ -282,7 +282,17 @@ Current pricing for instance volumes can be [found here](https://aws.amazon.com/
 
 Lastly, there are charges for transferring data OUT of EC2 (transferring data IN is free).  Right now it's about $0.09 / GB for outbound transfers (details at bottom of [this page](https://aws.amazon.com/ec2/pricing/on-demand/)).  If your compute job processes lots of data, but the results are small in file size (e.g., aligning reads to produce a gene-count matrix) then this cost will be insignificant.  But, if your job results in the creation of lots of data - all of which you need to download when finished, it's important to plan for this charge.
 
-# Example:  Aligning RNA-seq data
+## AWS ParallelCluster
+
+Once you're comfortable with launching your own instances, you may want to check out [AWS ParallelCluster](https://aws.amazon.com/blogs/opensource/aws-parallelcluster/). It's a relatively new (Released Nov 2018) service that let's you create a cluster of compute nodes in AWS.
+
+- Submit jobs using `qsub` like you would on a local cluster
+- AWS scales the number of active instances automatically
+- All instances can connect to the same file system
+
+# Appendix:
+
+## Example: Aligning RNA-seq Data
 
 To help clarify things, here's an example computational job you might want to run in the cloud - we're going to align some RNA-seq data with the STAR aligner.
 
@@ -354,9 +364,6 @@ Later, you can start your instance back up, log into it, and download the result
 scp -i "~/AmazonKeys/AWSKey.pem" ubuntu@ec2-54-193-56-170.us-west-1.compute.amazonaws.com:~/alignedOut/outputfile.sam .
 ```
 
-
-# Appendix:
-
 ## Command Line Interface (CLI)
 
 AWS has an extensive command-line interface documented [here](https://aws.amazon.com/cli/).  Basically, everything we did on their web portal, you could do from the command line.  This can be useful if you want to write scripts that involve AWS.  Also, you can use the command line tools from within instances you create.  For an example of how this could be useful - imagine you were managing many different RNA-seq references.  Instead of putting them on your images, you can put them in Amazon S3 - which is kind of like a giant web hard drive, and then access them from your image.  You'd use commands like:
@@ -369,14 +376,6 @@ aws s3 cp hg38_STAR s3::/references/hg38_STAR --recursive
 aws s3 cp s3::/references/hg38_STAR hg38_STAR --recursive
 ```
 There's no charge for data transfers within the same region, though you would still pay for the storage of the reference (about half the cost per GB of volume storage).
-
-## AWS ParallelCluster
-
-Once you're comfortable with launching your own instances, you may want to check out [AWS ParallelCluster](https://aws.amazon.com/blogs/opensource/aws-parallelcluster/). It's a relatively new (Released Nov 2018) service that let's you create a cluster of compute nodes in AWS.
-
-- Submit jobs using `qsub` like you would on a local cluster
-- AWS scales the number of active instances automatically
-- All instances can connect to the same file system
 
 ## Raising utilization limit for instance
 
