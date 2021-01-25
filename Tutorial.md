@@ -514,7 +514,7 @@ aws s3 cp s3::/references/hg38_STAR hg38_STAR --recursive
 ```
 There's no charge for data transfers within the same region, though you would still pay for the storage of the reference (about half the cost per GB of volume storage).
 
-## Raising utilization limit for instance
+## Raising Utilization Limit for Instance
 
 You *may* get an error launching the instance - something about your utilization limit for that instance being exceeded.  This happens because for some instance types, Amazon automatically sets a limit of 0 intances on new AWS accounts.  I believe this is done for security purposes (so that someone getting your login key can't just spin up 1000 instances to mine bitcoin at your expense).  If you run into this error, it's fairly easy to request a limit increase in the support center.  I've found that usually Amazon responds to these requests in a few hours.
 
@@ -533,3 +533,7 @@ When you request spot instances you specify what you are willing to pay and if t
 **2. You can't Start a spot instance once you Stop it**
 
 With on-demand instances you can 'Stop' the instance, essentially pausing it indefinitely.  You won't be charged for compute costs while it is stopped and then you can start it again at a later time.  With a spot instance, once you stop it you can't start it again, so you must download the results of a computation before stopping the instance.  Alternately, you can attach an extra storage volume to the instance and save your results on that volume, then mount that with another instance later to get a similar kind of behavior - just with a bit more work.
+
+## Running an MPI Job with AWS ParallelCluster and awsbatch Scheduler
+
+Once you have created an AWS ParallelCluster as shown above, [this tutorial](https://docs.aws.amazon.com/parallelcluster/latest/ug/tutorials_03_batch_mpi.html) walks you through running an [MPI](https://en.wikipedia.org/wiki/Message_Passing_Interface) job with awsbatch as a scheduler.
