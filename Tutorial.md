@@ -265,6 +265,8 @@ sudo pip install aws-parallelcluster
 ```
 Windows support is experimental. For Windows see [here](https://aws-parallelcluster.readthedocs.io/en/latest/getting_started.html).
 
+For OSX, you might need to update your path following [these directions](https://docs.aws.amazon.com/parallelcluster/latest/ug/install-macos.html).
+
 ## Configuring AWS ParallelCluster
 
 First you’ll need to setup your IAM credentials, see [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) for more information.
