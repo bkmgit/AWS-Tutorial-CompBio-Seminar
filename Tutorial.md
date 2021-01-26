@@ -267,6 +267,17 @@ Windows support is experimental. For Windows see [here](https://aws-parallelclus
 
 For OSX, you might need to update your path following [these directions](https://docs.aws.amazon.com/parallelcluster/latest/ug/install-macos.html).
 
+For OSX, nstall [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-macos.html):
+```
+curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
+unzip awscli-bundle.zip
+sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
+```
+Check the installation:
+```
+aws --version
+```
+
 ## Configuring AWS ParallelCluster
 
 First you’ll need to setup your IAM credentials, see [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) for more information.
