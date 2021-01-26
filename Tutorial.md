@@ -136,16 +136,14 @@ Now click on 'Launch Instances'. On the next page, you can click 'View Instances
 
 On the EC2 >> Instances page, you can see your instance. To connect to it via SSH, right-click the instance and click 'Connect'.  You will then be shown a popup with instructions on how to use your key pair to SSH into the instance.  In this case, I am using this command to connect:
 
-You might first need to make your key more secure typing:
+You first need to make your key more secure with '400' permission typing:
 ```
-chmod 744 ~/AmazonKeys/AWSKey.pem
+chmod 400 AWS-tutorial.pem
 ```
 You can then proceed:
 ```
-ssh -i "~/AmazonKeys/AWSKey.pem" ubuntu@ec2-35-167-139-94.us-west-2.compute.amazonaws.com
+ssh -i "AWS-tutorial.pem" ubuntu@ec2-35-167-139-94.us-west-2.compute.amazonaws.com
 ```
-
-Note that you must provide your own path to the key pair (AWSKey above) you created.  You'll also have to make sure it's permissions are '400' (AWS provides instructions on this too on the same popup).
 
 ## Setting up Your Software Tools
 
