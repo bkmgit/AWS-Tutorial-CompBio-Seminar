@@ -355,6 +355,13 @@ $ pcluster create mycluster
 ```
 The message “CREATE_COMPLETE” shows that the cluster created successfully. It also provided us with the public and private IP addresses of our master node. We’ll need this IP to log in.
 
+This operation might take a few minutes based on the size of your clusters. In some case, it might help to open the config file and add the ```initial_count =``` field.
+
+```
+vim ~/.parallelcluster/config
+```
+Your path to the config file might be different.
+
 ## Logging into Your Master Instance
 
 You’ll use your OpenSSH pem file to log into your master instance.
