@@ -360,7 +360,7 @@ This operation might take a few minutes based on the size of your clusters. In s
 ```
 vim ~/.parallelcluster/config
 ```
-Your path to the config file might be different.
+Your path to the config file might be different. In the config file you can also specify one of your AMIs where you might have already installed software you need.
 
 Once it's done, you should see something like:
 ```
@@ -428,6 +428,11 @@ $ cat slurm-2.out
 Hello World from compute-st-t2micro-1
 ```
 We can see that our job successfully ran on instance "compute-st-t2micro-1".
+
+Once you're done with your cluster, remember to shut it down:
+```
+pcluster deleter mycluster
+```
 
 ## Running an MPI Job with AWS ParallelCluster and awsbatch Scheduler
 
