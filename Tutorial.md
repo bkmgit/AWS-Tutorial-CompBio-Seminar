@@ -362,13 +362,28 @@ vim ~/.parallelcluster/config
 ```
 Your path to the config file might be different.
 
+Once it's done, you should see something like:
+```
+$ pcluster create mycluster                
+Beginning cluster creation for cluster: mycluster
+Creating stack named: parallelcluster-mycluster
+Status: parallelcluster-mycluster - CREATE_COMPLETE                             
+ClusterUser: ubuntu
+MasterPrivateIP: 10.0.0.237
+$
+```
+
 ## Logging into Your Master Instance
 
 You’ll use your OpenSSH pem file to log into your master instance.
 ```
-$ pcluster ssh hello-world -i /path/to/keyfile.pem
+$ pcluster ssh mycluster -i AWS-tutorial.pem
 ```
-Once logged in, run the command ```qhost``` to ensure that your compute nodes are setup and configured.
+Remember the path/name to your key might be different.
+
+Once logged in, run the command ```sinfo``` to ensure that your compute nodes are setup and configured.
+
+For this cluster we selcted Slurm as workload manager, but [AWS offers different options](https://docs.aws.amazon.com/parallelcluster/latest/ug/schedulers.html) and [different commands](https://srcc.stanford.edu/sge-slurm-conversion) might be necessary.
 
 ## Running Your First Job Using SGE
 
@@ -379,42 +394,40 @@ Create a file called ```hellojob.sh``` with the following contents.
 sleep 30
 echo "Hello World from $(hostname)"
 ```
-Next, submit the job using ```qsub``` and ensure it runs.
+Next, submit the job using ```sbatch``` and ensure it runs.
 ```
-$ qsub hellojob.sh
-Your job 1 ("hellojob.sh") has been submitted
+$ sbatch hellojob.sh
+Submitted batch job 2
 ```
 Now, you can view your queue and check the status of the job.
 ```
-$ qstat
-job-ID  prior   name       user         state submit/start at     queue                          slots ja-task-ID
------------------------------------------------------------------------------------------------------------------
-      1 0.55500 hellojob.s ec2-user     r     03/24/2015 22:23:48 all.q@ip-192-168-1-125.us-west     1
+$ squeue
+             JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON) 
+                 3   compute hellojob   ubuntu  R       0:02      1 compute-st-t2micro-1 
 ```
 The job is currently in a running state. Wait 30 seconds for the job to finish and run qstat again.
 
 ```
-$ qstat
+$ squeue
+             JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON) 
 $
 ```
 
 Now that there are no jobs in the queue, we can check for output in our current directory.
 
 ```
-$ ls -l
-total 8
--rw-rw-r-- 1 ec2-user ec2-user 48 Mar 24 22:34 hellojob.sh
--rw-r--r-- 1 ec2-user ec2-user  0 Mar 24 22:34 hellojob.sh.e1
--rw-r--r-- 1 ec2-user ec2-user 34 Mar 24 22:34 hellojob.sh.o1
+$ ll
+-rw-rw-r-- 1 ubuntu ubuntu   57 Jan 27 00:32 hellojob.sh
+-rw-rw-r-- 1 ubuntu ubuntu   38 Jan 27 00:33 slurm-2.out
 ```
 
 Here, we see our job script, an “e1” and “o1” file. Since the e1 file is empty, there was no output to stderr. If we view the .o1 file, we can see any output from our job.
 
 ```
-$ cat hellojob.sh.o1
-Hello World from ip-192-168-1-125
+$ cat slurm-2.out
+Hello World from compute-st-t2micro-1
 ```
-We can see that our job successfully ran on instance "ip-192-168-1-125".
+We can see that our job successfully ran on instance "compute-st-t2micro-1".
 
 # Appendix:
 
