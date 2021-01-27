@@ -429,6 +429,10 @@ Hello World from compute-st-t2micro-1
 ```
 We can see that our job successfully ran on instance "compute-st-t2micro-1".
 
+## Running an MPI Job with AWS ParallelCluster and awsbatch Scheduler
+
+Once you have created an AWS ParallelCluster as shown above, [this tutorial](https://docs.aws.amazon.com/parallelcluster/latest/ug/tutorials_03_batch_mpi.html) walks you through running an [MPI](https://en.wikipedia.org/wiki/Message_Passing_Interface) job with awsbatch as a scheduler.
+
 # Appendix:
 
 ## Billing
@@ -569,7 +573,3 @@ When you request spot instances you specify what you are willing to pay and if t
 **2. You can't Start a spot instance once you Stop it**
 
 With on-demand instances you can 'Stop' the instance, essentially pausing it indefinitely.  You won't be charged for compute costs while it is stopped and then you can start it again at a later time.  With a spot instance, once you stop it you can't start it again, so you must download the results of a computation before stopping the instance.  Alternately, you can attach an extra storage volume to the instance and save your results on that volume, then mount that with another instance later to get a similar kind of behavior - just with a bit more work.
-
-## Running an MPI Job with AWS ParallelCluster and awsbatch Scheduler
-
-Once you have created an AWS ParallelCluster as shown above, [this tutorial](https://docs.aws.amazon.com/parallelcluster/latest/ug/tutorials_03_batch_mpi.html) walks you through running an [MPI](https://en.wikipedia.org/wiki/Message_Passing_Interface) job with awsbatch as a scheduler.
