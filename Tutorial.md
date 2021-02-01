@@ -271,7 +271,7 @@ Windows support is experimental. For Windows see [here](https://aws-parallelclus
 
 For OSX, you might need to update your path following [these directions](https://docs.aws.amazon.com/parallelcluster/latest/ug/install-macos.html).
 
-For OSX, nstall [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-macos.html):
+Install [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-macos.html):
 ```
 curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
 unzip awscli-bundle.zip
