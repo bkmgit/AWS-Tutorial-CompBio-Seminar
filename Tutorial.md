@@ -149,92 +149,12 @@ ssh -i "AWS-tutorial.pem" ubuntu@ec2-35-167-139-94.us-west-2.compute.amazonaws.c
 
 Now you have a computer in the cloud!  Congratulations!  So what can we do with it?  Not much initially - first we'll have to install some software tools.
 
-Here I'll show how to set up *Jupyter + Python* and *R + RStudio* on your instance.
-
-### Jupyter + Python
-
 The bare Ubuntu 18.04 instance we launched has Python 3.6 installed already, but we'll need to install 'pip' to download other packages:
 
 ```
 sudo apt-get update
 sudo apt-get install python3-pip
 ```
-
-You can now `pip install` any other python packages you want.  Let's install jupyter:
-
-```
-pip3 install jupyter
-echo "export PATH=~/.local/bin:\$PATH" >> ~/.bashrc
-source ~/.bashrc
-```
-
-Now we can run a jupyter notebook server like so:
-
-```
-jupyter notebook --ip 0.0.0.0 --port 8888
-```
-
-Here we specify the port that we opened earlier.  We also needed to specify the ip as '0.0.0.0' to make the notebook accessible remotely - we are 'remote' to this machine since it's in an Amazon datacenter somewhere.
-
-Connecting to it is a little tricky - jupyter will show you one address which looks like this:
-
-```
-http://ip-172-31-13-125:8888/?token=9fa221c16f2a4453e59cf49b06c7c56ae30366346e166ad3
-```
-
-However, it gets the wrong IP address since the machine only knows it's internal IP address (behind Amazon's routing infrastructure).  We can replace this with the correct IP address by looking it up on the dashboard:
-
-<img src="images/instanceIP.png" alt="Instance IP Address">
-
-First copy the address that jupyter shows to the address bar in your web browser.  Then replace everything in-between the `//` and the first `:` with the Public IP.  So if your public IP was 54.193.76.55, you would wind up with:
-
-```
-http://54.193.76.55:8888/?token=9fa221c16f2a4453e59cf49b06c7c56ae30366346e166ad3
-```
-
-Congrats! Now you're up and running and can create a notebook.
-
-### R + RStudio
-
-We can follow the instructions [here](https://www.rstudio.com/products/rstudio/download-server/) to install R and RStudio Server.  RStudio "Server" is probably different than the RStudio you have on your laptop as it's designed to be accessed over the web.
-
-First, install R:
-
-```
-sudo apt-get update
-sudo apt-get install r-base
-```
-
-Once you ran this you can run `R` and work with R in the command-line if you want.
-
-Install RStudio Server:
-
-```
-sudo apt-get install gdebi-core
-wget https://download2.rstudio.org/server/bionic/amd64/rstudio-server-1.2.1335-amd64.deb
-sudo gdebi rstudio-server-1.2.1335-amd64.deb
-```
-
-(If you are reading this many months after Sept 2019, these commands may be out of date and you should follow [this link](https://www.rstudio.com/products/rstudio/download-server/) for the updated commands)
-
-Before launching the server, we need to set a password for our account.  To do this run the following command and choose a password.
-
-```
-sudo passwd ubuntu
-```
-And now we can start the server with:
-
-```
-rstudio-server start
-```
-
-Then, we can navigate to the running server in our web browser.  First get the external IP of your instance:
-
-<img src="images/instanceIP.png" alt="Instance IP Address">
-
-Then navigate to `http://<instance-ip-address>:8787`
-
-And finally, RStudio is at your fingertips!
 
 # Creating an Amazon Machine Image
 
@@ -582,3 +502,88 @@ When you request spot instances you specify what you are willing to pay and if t
 **2. You can't Start a spot instance once you Stop it**
 
 With on-demand instances you can 'Stop' the instance, essentially pausing it indefinitely.  You won't be charged for compute costs while it is stopped and then you can start it again at a later time.  With a spot instance, once you stop it you can't start it again, so you must download the results of a computation before stopping the instance.  Alternately, you can attach an extra storage volume to the instance and save your results on that volume, then mount that with another instance later to get a similar kind of behavior - just with a bit more work.
+
+## Jupyter + Python
+
+The bare Ubuntu 18.04 instance we launched has Python 3.6 installed already, but we'll need to install 'pip' to download other packages:
+
+```
+sudo apt-get update
+sudo apt-get install python3-pip
+```
+
+You can now `pip install` any other python packages you want.  Let's install jupyter:
+
+```
+pip3 install jupyter
+echo "export PATH=~/.local/bin:\$PATH" >> ~/.bashrc
+source ~/.bashrc
+```
+
+Now we can run a jupyter notebook server like so:
+
+```
+jupyter notebook --ip 0.0.0.0 --port 8888
+```
+
+Here we specify the port that we opened earlier.  We also needed to specify the ip as '0.0.0.0' to make the notebook accessible remotely - we are 'remote' to this machine since it's in an Amazon datacenter somewhere.
+
+Connecting to it is a little tricky - jupyter will show you one address which looks like this:
+
+```
+http://ip-172-31-13-125:8888/?token=9fa221c16f2a4453e59cf49b06c7c56ae30366346e166ad3
+```
+
+However, it gets the wrong IP address since the machine only knows it's internal IP address (behind Amazon's routing infrastructure).  We can replace this with the correct IP address by looking it up on the dashboard:
+
+<img src="images/instanceIP.png" alt="Instance IP Address">
+
+First copy the address that jupyter shows to the address bar in your web browser.  Then replace everything in-between the `//` and the first `:` with the Public IP.  So if your public IP was 54.193.76.55, you would wind up with:
+
+```
+http://54.193.76.55:8888/?token=9fa221c16f2a4453e59cf49b06c7c56ae30366346e166ad3
+```
+
+Congrats! Now you're up and running and can create a notebook.
+
+### R + RStudio
+
+We can follow the instructions [here](https://www.rstudio.com/products/rstudio/download-server/) to install R and RStudio Server.  RStudio "Server" is probably different than the RStudio you have on your laptop as it's designed to be accessed over the web.
+
+First, install R:
+
+```
+sudo apt-get update
+sudo apt-get install r-base
+```
+
+Once you ran this you can run `R` and work with R in the command-line if you want.
+
+Install RStudio Server:
+
+```
+sudo apt-get install gdebi-core
+wget https://download2.rstudio.org/server/bionic/amd64/rstudio-server-1.2.1335-amd64.deb
+sudo gdebi rstudio-server-1.2.1335-amd64.deb
+```
+
+(If you are reading this many months after Sept 2019, these commands may be out of date and you should follow [this link](https://www.rstudio.com/products/rstudio/download-server/) for the updated commands)
+
+Before launching the server, we need to set a password for our account.  To do this run the following command and choose a password.
+
+```
+sudo passwd ubuntu
+```
+And now we can start the server with:
+
+```
+rstudio-server start
+```
+
+Then, we can navigate to the running server in our web browser.  First get the external IP of your instance:
+
+<img src="images/instanceIP.png" alt="Instance IP Address">
+
+Then navigate to `http://<instance-ip-address>:8787`
+
+And finally, RStudio is at your fingertips!
