@@ -111,7 +111,7 @@ Next, we choose an instance type. Here we can decide how powerful our machine is
 There are many options on this page, but you can ignore most of them. The one that is good to know is the 'Request Spot Instances' option at the top. Do not click on it now, but in the future when you run long jobs, you should choose this option as spot instances can save you a lot of money. For more information, see the [appendix item on Spot Instances](#spot-instances). For now, just click "Next" at the bottom right.
 
 **Step 4: Add Storage**
-On this page, you can set the storage space for your instance. Let's set this to 50 GB to give ourselves some room.
+On this page, you can set the storage space for your instance. Let's set this to 50 GB to give ourselves some room. Please not this change will not make t2.micro eligible for free tier anymore.
 
 **Step 5: Add Tags**
 On this page you can add tags. This is only useful if you have many servers and you want to organize them all using tags. Click "Next".
@@ -249,6 +249,10 @@ On the EC2 Console (in your web browser), right click you instance and select "C
 Give the image a name and description and hit 'Create Image'.
 
 Now, on the left side of the dashboard, you can select 'AMIs' under the 'Images' heading and see the status of your image being created.  When the status goes from 'pending' to 'available', then you can launch new instances from this Image.
+
+# Cost Explorer
+
+TBD
 
 # AWS ParallelCluster
 
