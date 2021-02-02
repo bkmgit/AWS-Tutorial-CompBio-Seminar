@@ -596,10 +596,10 @@ I recentely carried out a performance study comparing modern cloud instances and
 
 > Guidi, Giulia, et al. "10 Years Later: Cloud Computing is Closing the Performance Gap." arXiv preprint arXiv:2011.00656 (2020).
 
-# Contact
+## Contact
 
 If you're interested in learning more about HPC (in the cloud and not) or have further questions about how to use AWS, please contact me at ```gguidi at berkeley dot edu```. 
 
-# Acknowledgment
+## Acknowledgments
 
 Thanks to David DeTomaso for developing the first version of this tutorial and thanks to RISE Lab at UC Berkeley for providing AWS credits.
