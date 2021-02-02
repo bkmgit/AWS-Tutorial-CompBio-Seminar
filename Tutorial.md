@@ -32,7 +32,7 @@ Other resources are available at Berkeley (including the Savio cluster) and the 
 
 # AWS Basics
 
-**Disclaimer**: If you're going to following this tutotial step by step on AWS, be aware it'll cost you (or your lab or whoever's credit card is connected to your account) about $5 assuming you'll shut down everything (instances, images, volumes, snapshots, VPNs, VPCs, network interfaces, subnets, NAT gateways, etc.) once the tutorial is over.
+**Disclaimer**: If you're going to following this tutotial step by step on AWS, be aware it'll cost you (or your lab or whoever's credit card is connected to your account) about $5-10 assuming you'll shut down everything (instances, images, volumes, snapshots, VPNs, VPCs, network interfaces, subnets, NAT gateways, etc.) once the tutorial is over.
 
 ## Creating an AWS Account
 
