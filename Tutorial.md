@@ -374,6 +374,8 @@ I recentely carried out a performance study comparing modern cloud instances and
 
 If you're interested in learning more about HPC (in the cloud and not) or have further questions about how to use AWS, please contact me at ```gguidi at berkeley dot edu```. 
 
+# Appendix
+
 ## Billing
 
 It's important to be able to estimate how much running a job will cost.  AWS charges fall mainly in the following categories:
