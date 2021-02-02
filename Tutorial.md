@@ -172,7 +172,7 @@ Now, on the left side of the dashboard, you can select 'AMIs' under the 'Images'
 
 # Cost Explorer
 
-TBD
+(Cost Explorer)[https://aws.amazon.com/aws-cost-management/aws-cost-explorer/] is an important tool to keep track of your expenses and know how exactly you're spending your (or your lab) money.
 
 # AWS ParallelCluster
 
