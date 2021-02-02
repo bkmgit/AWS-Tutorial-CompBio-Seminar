@@ -364,7 +364,15 @@ pcluster deleter mycluster
 
 Once you have created an AWS ParallelCluster as shown above, [this tutorial](https://docs.aws.amazon.com/parallelcluster/latest/ug/tutorials_03_batch_mpi.html) walks you through running an [MPI](https://en.wikipedia.org/wiki/Message_Passing_Interface) job with awsbatch as a scheduler.
 
-# Appendix:
+## (Potential) Interesting Reading
+
+I recentely carried out a performance study comparing modern cloud instances and the NERSC supercomputer Cori:
+
+> Guidi, Giulia, et al. "10 Years Later: Cloud Computing is Closing the Performance Gap." arXiv preprint arXiv:2011.00656 (2020).
+
+## Contact
+
+If you're interested in learning more about HPC (in the cloud and not) or have further questions about how to use AWS, please contact me at ```gguidi at berkeley dot edu```. 
 
 ## Billing
 
