@@ -599,3 +599,7 @@ Then, we can navigate to the running server in our web browser.  First get the e
 Then navigate to `http://<instance-ip-address>:8787`
 
 And finally, RStudio is at your fingertips!
+
+# Acknowledgment
+
+Thanks to David DeTomaso for developing the first version of this tutorial and thanks to RISE Lab at UC Berkeley for providing AWS credits.
