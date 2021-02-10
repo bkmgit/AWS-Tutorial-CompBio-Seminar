@@ -536,7 +536,7 @@ Once you completed the tutorial, remember to delete your cluster and all the ass
 
 ## Placement Group and Performance
 
-If achieving high performance is critical to your work, you may need to pay a little more attention to your configuration file when creating your cluster. First, you want to select instances that can guarantee high network performance, and second, you want to do your best to put your instances in the same [placement group] (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html). This second option ensures that your instances are physically close to each other in the AWS datacenter so that network latency is minimized. You want to choose the ```cluster``` option. 
+If achieving high performance is critical to your work, you may need to pay a little more attention to your configuration file when creating your cluster. First, you want to select instances that can guarantee high network performance, and second, you want to do your best to put your instances in the same [placement group](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html). This second option ensures that your instances are physically close to each other in the AWS datacenter so that network latency is minimized. You want to choose the ```cluster``` option. 
 
 # Appendix
 
