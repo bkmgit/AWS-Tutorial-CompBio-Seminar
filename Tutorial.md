@@ -362,7 +362,177 @@ pcluster deleter mycluster
 
 ## Running an MPI Job with AWS ParallelCluster and awsbatch Scheduler
 
-Once you have created an AWS ParallelCluster as shown above, [this tutorial](https://docs.aws.amazon.com/parallelcluster/latest/ug/tutorials_03_batch_mpi.html) walks you through running an [MPI](https://en.wikipedia.org/wiki/Message_Passing_Interface) job with awsbatch as a scheduler.
+Once you have created an AWS ParallelCluster as shown above, we can implement a different configuration and [run an MPI job on it using ```awsbatch``` as workload manager](https://docs.aws.amazon.com/parallelcluster/latest/ug/tutorials_03_batch_mpi.html).
+
+You might first need to delete the old config file:
+
+```
+vim ~/.parallelcluster/config
+```
+
+Then, you need to repeat the configuration but this timw we want to use ```awsbatch``` as workload manager instead of ```slurm```.
+
+```
+pcluster configure
+```
+
+Once the configuration is complete you should be able to create your cluster typing:
+
+```
+pcluster create -c ~/.parallelcluster/config mpi-cluster
+```
+
+This operation might takes a few minutes.
+
+Once it's completed you can log in as:
+
+```
+pcluster ssh mpi-cluster -i ~/AWS-tutorial.pem 
+```
+Remember to substitute the above command with your AWS key.
+
+Once you are logged in, run the commands ```awsbqueues``` and ```awsbhosts``` to show the configured AWS Batch queue and the running Amazon ECS instances.
+
+```
+[ec2-user@ip-10-0-0-11 ~]$ awsbqueues
+/usr/lib/python2.7/site-packages/boto3/compat.py:86: PythonDeprecationWarning: Boto3 will no longer support Python 2.7 starting July 15, 2021. To continue receiving service updates, bug fixes, and security updates please upgrade to Python 3.6 or later. More information can be found here: https://aws.amazon.com/blogs/developer/announcing-end-of-support-for-python-2-7-in-aws-sdk-for-python-and-aws-cli-v1/
+  warnings.warn(warning, PythonDeprecationWarning)
+jobQueueName              status
+------------------------  --------
+JobQueue-05db6c48e4a87f5  VALID
+[ec2-user@ip-10-0-0-11 ~]$ awsbhosts
+/usr/lib/python2.7/site-packages/boto3/compat.py:86: PythonDeprecationWarning: Boto3 will no longer support Python 2.7 starting July 15, 2021. To continue receiving service updates, bug fixes, and security updates please upgrade to Python 3.6 or later. More information can be found here: https://aws.amazon.com/blogs/developer/announcing-end-of-support-for-python-2-7-in-aws-sdk-for-python-and-aws-cli-v1/
+  warnings.warn(warning, PythonDeprecationWarning)
+ec2InstanceId        instanceType    privateIpAddress    publicIpAddress      runningJobs
+-------------------  --------------  ------------------  -----------------  -------------
+i-01df1e66fceb51b8c  m4.large        10.0.27.81          -                              0
+[ec2-user@ip-10-0-0-11 ~]$ 
+```
+
+As you can see from the output, we have one single running host. This is due to the value we chose for ```min_vcpus``` in the configuration. If you want to display additional details about the AWS Batch queue and hosts, add the ```-d``` flag to the command.
+
+Logged into the head node, create a file in the ```/shared``` directory named ```mpi_hello_world.c```:
+
+```
+cd /shared
+vim mpi_hello_world.c
+```
+
+Then, add the following MPI program to the file:
+
+```
+// Copyright 2011 www.mpitutorial.com
+//
+// An intro MPI hello world program that uses MPI_Init, MPI_Comm_size,
+// MPI_Comm_rank, MPI_Finalize, and MPI_Get_processor_name.
+//
+#include <mpi.h>
+#include <stdio.h>
+#include <stddef.h>
+
+int main(int argc, char** argv) {
+  // Initialize the MPI environment. The two arguments to MPI Init are not
+  // currently used by MPI implementations, but are there in case future
+  // implementations might need the arguments.
+  MPI_Init(NULL, NULL);
+
+  // Get the number of processes
+  int world_size;
+  MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+
+  // Get the rank of the process
+  int world_rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+
+  // Get the name of the processor
+  char processor_name[MPI_MAX_PROCESSOR_NAME];
+  int name_len;
+  MPI_Get_processor_name(processor_name, &name_len);
+
+  // Print off a hello world message
+  printf("Hello world from processor %s, rank %d out of %d processors\n",
+         processor_name, world_rank, world_size);
+
+  // Finalize the MPI environment. No more MPI calls can be made after this
+  MPI_Finalize();
+}
+```
+
+And now save the following code as ```submit_mpi.sh```:
+
+```
+#!/bin/bash
+echo "ip container: $(/sbin/ip -o -4 addr list eth0 | awk '{print $4}' | cut -d/ -f1)"
+echo "ip host: $(curl -s "http://169.254.169.254/latest/meta-data/local-ipv4")"
+
+# get shared dir
+IFS=',' _shared_dirs=(${PCLUSTER_SHARED_DIRS})
+_shared_dir=${_shared_dirs[0]}
+_job_dir="${_shared_dir}/${AWS_BATCH_JOB_ID%#*}-${AWS_BATCH_JOB_ATTEMPT}"
+_exit_code_file="${_job_dir}/batch-exit-code"
+
+if [[ "${AWS_BATCH_JOB_NODE_INDEX}" -eq  "${AWS_BATCH_JOB_MAIN_NODE_INDEX}" ]]; then
+    echo "Hello I'm the main node $HOSTNAME! I run the mpi job!"
+
+    mkdir -p "${_job_dir}"
+
+    echo "Compiling..."
+    /usr/lib64/openmpi/bin/mpicc -o "${_job_dir}/mpi_hello_world" "${_shared_dir}/mpi_hello_world.c"
+
+    echo "Running..."
+    /usr/lib64/openmpi/bin/mpirun --mca btl_tcp_if_include eth0 --allow-run-as-root --machinefile "${HOME}/hostfile" "${_job_dir}/mpi_hello_world"
+
+    # Write exit status code
+    echo "0" > "${_exit_code_file}"
+    # Waiting for compute nodes to terminate
+    sleep 30
+else
+    echo "Hello I'm the compute node $HOSTNAME! I let the main node orchestrate the mpi processing!"
+    # Since mpi orchestration happens on the main node, we need to make sure the containers representing the compute
+    # nodes are not terminated. A simple trick is to wait for a file containing the status code to be created.
+    # All compute nodes are terminated by AWS Batch if the main node exits abruptly.
+    while [ ! -f "${_exit_code_file}" ]; do
+        sleep 2
+    done
+    exit $(cat "${_exit_code_file}")
+fi
+```
+
+Ready to submit our first MPI job and make it run concurrently on three nodes:
+
+```
+awsbsub -n 3 -cf submit_mpi.sh
+```
+
+You'll see something like:
+
+```
+Job 776c0688-c522-4175-9612-e72d085a70ec (submit_mpi_sh) has been submitted.
+```
+
+You can monitor the job using:
+
+```
+watch awsbstat -d
+```
+When the job enters the ```RUNNING``` status, we can look at its output. To show the output of the main node, append ```#0``` to the job id. To show the output of the compute nodes, use ```#1``` and ```#2```.
+
+You can look at the overall statues typing:
+```
+awsbstat -s ALL
+```
+You might see something like:
+```
+[ec2-user@ip-10-0-0-11 shared]$ awsbstat -s ALL
+/usr/lib/python2.7/site-packages/boto3/compat.py:86: PythonDeprecationWarning: Boto3 will no longer support Python 2.7 starting July 15, 2021. To continue receiving service updates, bug fixes, and security updates please upgrade to Python 3.6 or later. More information can be found here: https://aws.amazon.com/blogs/developer/announcing-end-of-support-for-python-2-7-in-aws-sdk-for-python-and-aws-cli-v1/
+  warnings.warn(warning, PythonDeprecationWarning)
+jobId                                    jobName        status    startedAt    stoppedAt    exitCode
+---------------------------------------  -------------  --------  -----------  -----------  ----------
+776c0688-c522-4175-9612-e72d085a70ec *3  submit_mpi_sh  RUNNABLE  -            -            -
+```
+It means the job is still waiting to be run. If you want to terminate a job before it ends, you can use the ```awsbkill``` command.
+
+Once you completed the tutorial, remember to delete your cluster and all the associated machinery using the [Cost Explorer](https://aws.amazon.com/aws-cost-management/aws-cost-explorer/) we mentioned earlier.
 
 # Appendix
 
