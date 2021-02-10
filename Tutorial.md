@@ -768,7 +768,8 @@ And finally, RStudio is at your fingertips!
 
 I recentely carried out a performance study comparing modern cloud instances and the NERSC supercomputer Cori:
 
-> Guidi, Giulia, et al. "10 Years Later: Cloud Computing is Closing the Performance Gap." arXiv preprint arXiv:2011.00656 (2020).
+> Guidi, Giulia, et al. "10 Years Later: Cloud Computing is Closing the Performance Gap." arXiv preprint arXiv:2011.00656 (2020). To appear in 
+HotCloudPerf 2021.
 
 ## Contact
 
