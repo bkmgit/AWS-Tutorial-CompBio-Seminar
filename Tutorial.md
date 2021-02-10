@@ -777,4 +777,4 @@ If you're interested in learning more about HPC (in the cloud and not) or have f
 
 ## Acknowledgments
 
-Thanks to David DeTomaso for developing the first version of this tutorial and thanks to RISE Lab at UC Berkeley for providing AWS credits.
+Thanks to David DeTomaso for developing the first version of this tutorial and thanks to [RISE Lab at UC Berkeley](https://rise.cs.berkeley.edu/) for providing AWS credits.
