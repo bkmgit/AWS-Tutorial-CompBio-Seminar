@@ -311,7 +311,7 @@ Once logged in, run the command ```sinfo``` to ensure that your compute nodes ar
 
 For this cluster we selcted Slurm as workload manager, but [AWS offers different options](https://docs.aws.amazon.com/parallelcluster/latest/ug/schedulers.html) and [different commands](https://srcc.stanford.edu/sge-slurm-conversion) might be necessary.
 
-## Running Your First Job Using SGE
+## Running Your First Job Using Slurm
 
 Create a file called ```hellojob.sh``` with the following contents.
 
