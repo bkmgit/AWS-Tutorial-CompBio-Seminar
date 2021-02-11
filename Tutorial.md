@@ -375,6 +375,7 @@ Then, you need to repeat the configuration but this timw we want to use ```awsba
 ```
 pcluster configure
 ```
+You can also use the ```--config /Users/gguidi/.parallelcluster/config-2``` option to change the configuration file name (this is useful when creating multiple clusters simultaneously).
 
 Once the configuration is complete you should be able to create your cluster typing:
 
