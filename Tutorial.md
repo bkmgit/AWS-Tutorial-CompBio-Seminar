@@ -104,7 +104,7 @@ Note: Images are also referred to as **AMI**s (Amazon Machine Images).
 <img src="images/LaunchInstance.PNG" alt="Launch Instance" width="500">
 
 **Step 1: Choose AMI**
-Here we choose the base AMI (image) for our instance. Please scroll until you see Ubuntu Server 18.04 and click "Select" on the right.
+Here we choose the base AMI (image) for our instance. Please scroll until you see Ubuntu Server 20.04 and click "Select" on the right.
 
 **Step 2: Choose an Instance Type**
 Next, we choose an instance type. Here we can decide how powerful our machine is. The caveat is that more powerful machines cost more per hour. To see the prices, follow [this link](https://aws.amazon.com/ec2/pricing/on-demand/). Since we are only installing software, let's choose a lower performance instance, the 't2.micro'. Then click on 'Next: Configure Instance Details' at the bottom right.
@@ -113,7 +113,7 @@ Next, we choose an instance type. Here we can decide how powerful our machine is
 There are many options on this page, but you can ignore most of them. The one that is good to know is the 'Request Spot Instances' option at the top. Do not click on it now, but in the future when you run long jobs, you should choose this option as spot instances can save you a lot of money. For more information, see the [appendix item on Spot Instances](#spot-instances). For now, just click "Next" at the bottom right.
 
 **Step 4: Add Storage**
-On this page, you can set the storage space for your instance. Let's set this to 50 GB to give ourselves some room. Please not this change will not make t2.micro eligible for free tier anymore.
+On this page, you can set the storage space for your instance. Let's set this to 50 GB to give ourselves some room. Please note that this change will not make t2.micro eligible for free tier anymore.
 
 **Step 5: Add Tags**
 On this page you can add tags. This is only useful if you have many servers and you want to organize them all using tags. Click "Next".
@@ -121,7 +121,7 @@ On this page you can add tags. This is only useful if you have many servers and 
 **Step 6: Configure Security Group**
 On this page you can define which ports are open for your instance. By default, 22 will be open for SSH. There will be a warning that any IP address can access your instance. If you'd like you can fix this by specifying your device's IP address on this page to restrict access to your machine, but this isn't required.  
 
-We're going to open two more ports so that we can connect to a Jupyter notebook and R Studio Server on our instance. Click "Add Rule" twice and set up the new rules as shown in the image:
+We're going to open two more ports so that we can connect to a Jupyter notebook (custom TCP port 8888) and R Studio Server (custom TCP port 8787) on our instance. Click "Add Rule" twice and set up the new rules as shown in the image:
 
 <img src="images/ports.png" alt="Configure Ports">
 
@@ -184,20 +184,42 @@ It automatically sets up the required compute resources and a shared filesystem 
 
 ## Installing AWS ParallelCluster
 
-### Linux/OSX
-
+For more details, and other options please see the [documentation](https://docs.aws.amazon.com/parallelcluster/).    First setup a `virtualenv` for the Python package. If you do not have virtualenv installed, install it
 ```
-sudo pip install aws-parallelcluster
+python3 -m pip install --upgrade pip
+python3 -m pip install --user --upgrade virtualenv
 ```
-Windows support is experimental. For Windows see [here](https://aws-parallelcluster.readthedocs.io/en/latest/getting_started.html).
-
-For OSX, you might need to update your path following [these directions](https://docs.aws.amazon.com/parallelcluster/latest/ug/install-macos.html).
-
-Install [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-macos.html):
+Then open a new terminal, and create a virtualenv
 ```
-curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
-unzip awscli-bundle.zip
-sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
+python3 -m virtualenv awscluster
+source awscluster/bin/activate
+```
+Install aws-parallelcluster
+```
+python3 -m pip install --upgrade "aws-parallelcluster"
+```
+
+Install [AWS CLI](https://docs.aws.amazon.com/cli/latest).
+- Linux X86-64
+```
+curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+```
+- Linux ARM
+```
+curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+```
+- Mac OS X
+```
+curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
+sudo installer -pkg AWSCLIV2.pkg -target /
+```
+- Windows
+```
+msiexec.exe /i https://awscli.amazonaws.com/AWSCLIV2.msi
 ```
 Check the installation:
 ```
@@ -206,7 +228,7 @@ aws --version
 
 ## Configuring AWS ParallelCluster
 
-First you’ll need to setup your IAM credentials, see [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) for more information.
+First you’ll need to setup your IAM credentials, see [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) for more information as well as [the parallel cluster IAM roles](https://docs.aws.amazon.com/parallelcluster/latest/ug/iam-roles-in-parallelcluster-v3.html). It is recommended to setup a separate IAM user.
 
 ```
 $ aws configure
@@ -218,92 +240,147 @@ Default output format [None]:
 Once installed you will need to setup some initial config. The easiest way to do this is below:
 
 ```
-$ pcluster configure
+$ pcluster configure --config cluster-config.yaml
 ```
-This configure wizard will prompt you for everything you need to create your cluster. You will first be prompted for your cluster template name, which is the logical name of the template you will create a cluster from.
+This configure wizard will prompt you for everything you need to create your cluster. You will first be prompted for the AWS region of your cluster. Choose the region from the list of valid AWS region identifiers in which you’d like your cluster to run.
 
 ```
-Cluster Template [mycluster]:
-```
-Now, you will be presented with a list of valid AWS region identifiers. Choose the region in which you’d like your cluster to run.
-
-```
-Acceptable Values for AWS Region ID:
-    us-east-1
-    cn-north-1
-    ap-northeast-1
-    eu-west-1
-    ap-southeast-1
-    ap-southeast-2
-    us-west-2
-    us-gov-west-1
-    us-gov-east-1
-    us-west-1
-    eu-central-1
-    sa-east-1
-AWS Region ID []:
-```
-Choose a descriptive name for your VPC. Typically, this will be something like production or test.
-
-```
-VPC Name [myvpc]:
+Allowed values for AWS Region ID:
+1. af-south-1
+2. ap-northeast-1
+3. ap-northeast-2
+4. ap-south-1
+5. ap-southeast-1
+6. ap-southeast-2
+7. ca-central-1
+8. eu-central-1
+9. eu-north-1
+10. eu-west-1
+11. eu-west-2
+12. eu-west-3
+13. sa-east-1
+14. us-east-1
+15. us-east-2
+16. us-west-1
+17. us-west-2
+AWS Region ID [us-east-1]: 
 ```
 Next, you will need to choose a key pair that already exists in EC2 in order to log into your master instance. If you do not already have a key pair, refer to the EC2 documentation on [EC2 Key Pairs](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html).
 ```
-Acceptable Values for Key Name:
-    keypair1
-    keypair-test
-    production-key
-Key Name []:
+Acceptable Values for EC2 Key Pair Name:
+1. keypair1
+2. keypair-test
+3. production-key
+EC2 Key Pair Name [keypair1]: 1
 ```
 Choose the VPC ID into which you’d like your cluster launched.
 
 ```
-Acceptable Values for VPC ID:
-    vpc-1kd24879
-    vpc-blk4982d
-VPC ID []:
+Allowed values for Scheduler:
+1. slurm
+2. awsbatch
+Scheduler [slurm]: 1
 ```
-Finally, choose the subnet in which you’d like your master server to run.
+Next, choose the operating system
 
 ```
-Acceptable Values for Master Subnet ID:
-    subnet-9k284a6f
-    subnet-1k01g357
-    subnet-b921nv04
-Master Subnet ID []:
+Allowed values for Operating System:
+1. alinux2
+2. centos7
+3. ubuntu1804
+4. ubuntu2004
+Operating System [alinux2]: 4
+```
+Indicate the type of EC2 instance for the headnode
+```
+Head node instance type [t2.micro]: t2.micro
+```
+Indicate the number of queues
+```
+Number of queues [1]: 1
+```
+the name of the queue
+```
+Name of queue 1 [queue1]: queue1
+```
+Different types of nodes that can be provisioned from that queue
+```
+Number of compute resources for queue1 [1]: 1`
+```
+Type of compute instance
+```
+Compute instance type for compute resource 1 in queue1 [t2.micro]: t2.micro
+```
+Maximum number of instances that can be provisioned (note that this determines maximum billing):
+```
+Maximum instance count [10]: 4
+```
+It is easiest to allow automated provisioning of the network, though this can be further customised.
+```
+Automate VPC creation? (y/n) [n]: y
+```
+Then choose the availability zone
+```
+Allowed values for Availability Zone:
+1. us-east-1a
+2. us-east-1b
+3. us-east-1c
+4. us-east-1d
+5. us-east-1e
+6. us-east-1f
+Availability Zone [us-east-1a]: 1
+```
+Finally indicate the network configuration
+```
+Allowed values for Network Configuration:
+1. Head node in a public subnet and compute fleet in a private subnet
+2. Head node and compute fleet in the same public subnet
+Network Configuration [Head node in a public subnet and compute fleet in a private subnet]: 1 
+```
+After which you should see a message similar to
+```
+Beginning VPC creation. Please do not leave the terminal until the creation is finalized
+Creating CloudFormation stack...
+Do not leave the terminal until the process has finished.
+Stack Name: parallelclusternetworking-pubpriv-20320129080552 (id: arn:aws:cloudformation:us-east-1:512698773361:stack/parallelclusternetworking-pubpriv-20320129080552/3bce2dd1-9011-11ef-9d25-0e856fe96fgd)
+Status: parallelclusternetworking-pubpriv-20320129080552 - CREATE_COMPLETE      
+The stack has been created.
+Configuration file written to cluster-config.yaml
+
 ```
 ## Creating your First Cluster
 
 Once all of those settings contain valid values, you can launch the cluster by running the create command:
 ```
-$ pcluster create mycluster
+$ pcluster create-cluster --cluster-configuration cluster-config.yaml --cluster-name test-cluster --region us-east-1
 ```
-The message “CREATE_COMPLETE” shows that the cluster created successfully. It also provided us with the public and private IP addresses of our master node. We’ll need this IP to log in.
+The message “CREATE_IN_PROGRESS” shows that the cluster is being created. Check for the status of creation using
+```
+$ pcluster list-clusters
+```
+and wait until you get a message `“CREATE_COMPLETE”`. This operation might take a few minutes based on the size of your clusters. Once it's done, you should see something like:
+```
+$ pcluster list-clusters
+{
+  "clusters": [
+    {
+      "clusterName": "test-cluster",
+      "cloudformationStackStatus": "CREATE_COMPLETE",
+      "cloudformationStackArn": "arn:aws:cloudformation:us-east-1:512698773361:stack/test-cluster/d473a1g0-8911-12ec-9252-0a1ba9938529",
+      "region": "us-east-1",
+      "version": "3.0.3",
+      "clusterStatus": "CREATE_COMPLETE"
+    }
+  ]
+}
 
-This operation might take a few minutes based on the size of your clusters. In some case, it might help to open the config file and add the ```initial_count =``` field.
-
-```
-vim ~/.parallelcluster/config
-```
-Your path to the config file might be different. In the config file you can also specify one of your AMIs where you might have already installed software you need.
-
-Once it's done, you should see something like:
-```
-$ pcluster create mycluster                
-Beginning cluster creation for cluster: mycluster
-Creating stack named: parallelcluster-mycluster
-Status: parallelcluster-mycluster - CREATE_COMPLETE                             
-ClusterUser: ubuntu
-MasterPrivateIP: 10.0.0.237
-$
 ```
 
 ## Logging into Your Master Instance
 
 You’ll use your OpenSSH pem file to log into your master instance.
 ```
-$ pcluster ssh mycluster -i AWS-tutorial.pem
+$ pcluster ssh --cluster-name test-cluster -i keypair1.pem
 ```
 Remember the path/name to your key might be different.
 
