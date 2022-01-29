@@ -151,7 +151,7 @@ ssh -i "AWS-tutorial.pem" ubuntu@ec2-35-167-139-94.us-west-2.compute.amazonaws.c
 
 Now you have a computer in the cloud!  Congratulations!  So what can we do with it?  Not much initially - first we'll have to install some software tools.
 
-The bare Ubuntu 18.04 instance we launched has Python 3.6 installed already, but we'll need to install 'pip' to download other packages:
+The bare Ubuntu 20.04 instance we launched has Python 3.8 installed already, but we'll need to install 'pip' to download other packages:
 
 ```
 sudo apt-get update
@@ -434,7 +434,7 @@ We can see that our job successfully ran on instance "compute-st-t2micro-1".
 
 Once you're done with your cluster, remember to shut it down:
 ```
-pcluster deleter mycluster
+pcluster delete-cluster --cluster-name test-cluster
 ```
 
 ## Running an MPI Job with AWS ParallelCluster and awsbatch Scheduler
@@ -447,7 +447,7 @@ You might first need to delete the old config file:
 vim ~/.parallelcluster/config
 ```
 
-Then, you need to repeat the configuration but this timw we want to use ```awsbatch``` as workload manager instead of ```slurm```.
+Then, you need to repeat the configuration but this time we want to use ```awsbatch``` as workload manager instead of ```slurm```.
 
 ```
 pcluster configure
