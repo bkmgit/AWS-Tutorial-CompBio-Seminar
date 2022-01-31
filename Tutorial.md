@@ -178,7 +178,7 @@ Now, on the left side of the dashboard, you can select 'AMIs' under the 'Images'
 
 # AWS ParallelCluster
 
-[AWS ParallelCluster](https://aws.amazon.com/blogs/opensource/aws-parallelcluster/) introduces in 2018 is an AWS supported Open Source cluster management tool that makes it easy for you to deploy and manage High Performance Computing (HPC) clusters in the AWS cloud.
+[AWS ParallelCluster](https://aws.amazon.com/blogs/opensource/aws-parallelcluster/) introduced in 2018 is an [AWS supported Open Source cluster management tool](https://github.com/aws/aws-parallelcluster) that makes it easy for you to deploy and manage High Performance Computing (HPC) clusters in the AWS cloud.
 
 It automatically sets up the required compute resources and a shared filesystem and offers a variety of batch schedulers such as AWS Batch, SGE, Torque, and Slurm. AWS ParallelCluster facilitates both quick start proof of concepts (POCs) and production deployments.
 
