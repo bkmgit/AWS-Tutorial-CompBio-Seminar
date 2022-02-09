@@ -273,7 +273,7 @@ Acceptable Values for EC2 Key Pair Name:
 3. production-key
 EC2 Key Pair Name [keypair1]: 1
 ```
-Choose the VPC ID into which you’d like your cluster launched.
+Choose the scheduler,
 
 ```
 Allowed values for Scheduler:
@@ -439,25 +439,74 @@ pcluster delete-cluster --cluster-name test-cluster
 
 ## Running an MPI Job with AWS ParallelCluster and awsbatch Scheduler
 
-Once you have created an AWS ParallelCluster as shown above, we can implement a different configuration and [run an MPI job on it using ```awsbatch``` as workload manager](https://docs.aws.amazon.com/parallelcluster/latest/ug/tutorials_03_batch_mpi.html).
+Create a new AWS ParallelCluster, and choose a different configuration to [run an MPI job on it using ```awsbatch``` as workload manager](https://docs.aws.amazon.com/parallelcluster/latest/ug/tutorials_03_batch_mpi.html).
 
-You might first need to delete the old config file:
-
-```
-vim ~/.parallelcluster/config
-```
-
-Then, you need to repeat the configuration but this time we want to use ```awsbatch``` as workload manager instead of ```slurm```.
 
 ```
-pcluster configure
+$ pcluster configure --config cluster-config-batch.yaml
 ```
-You can also use the ```--config /Users/gguidi/.parallelcluster/config-2``` option to change the configuration file name (this is useful when creating multiple clusters simultaneously).
+This configure wizard will prompt you for everything you need to create your cluster. You will first be prompted for the AWS region of your cluster. Choose the region from the list of valid AWS region identifiers in which you’d like your cluster to run.
+
+```
+Allowed values for AWS Region ID:
+1. af-south-1
+2. ap-northeast-1
+3. ap-northeast-2
+4. ap-south-1
+5. ap-southeast-1
+6. ap-southeast-2
+7. ca-central-1
+8. eu-central-1
+9. eu-north-1
+10. eu-west-1
+11. eu-west-2
+12. eu-west-3
+13. sa-east-1
+14. us-east-1
+15. us-east-2
+16. us-west-1
+17. us-west-2
+AWS Region ID [us-east-1]: 
+```
+Next, you will need to choose a key pair that already exists in EC2 in order to log into your master instance. If you do not already have a key pair, refer to the EC2 documentation on [EC2 Key Pairs](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html).
+```
+Acceptable Values for EC2 Key Pair Name:
+1. keypair1
+2. keypair-test
+3. production-key
+EC2 Key Pair Name [keypair1]: 1
+```
+Choose the scheduler,
+
+```
+Allowed values for Scheduler:
+1. slurm
+2. awsbatch
+Scheduler [slurm]: 2
+```
+In this case, only Amazon Linux is available as the operating system for the head node, so
+unlike with SLURM, there is no choice for the operating system. Next choose the EC2 instance type
+for the login node,
+```
+Head node instance type [t2.micro]: t2.micro
+```
+Indicate the name of the queue
+```
+Name of queue 1 [queue1]:
+```
+Maximum number of instances that can be provisioned (note that this determines maximum billing):
+```
+Maximum instance count [10]: 4
+```
+It is easiest to allow automated provisioning of the network, though this can be further customised.
+```
+Automate VPC creation? (y/n) [n]: y
+```
 
 Once the configuration is complete you should be able to create your cluster typing:
 
 ```
-pcluster create -c ~/.parallelcluster/config mpi-cluster
+pcluster create-cluster --cluster-configuration cluster-config-batch.yaml --cluster-name batch-cluster --region us-east-1
 ```
 
 This operation might takes a few minutes.
@@ -465,7 +514,7 @@ This operation might takes a few minutes.
 Once it's completed you can log in as:
 
 ```
-pcluster ssh mpi-cluster -i ~/AWS-tutorial.pem 
+pcluster ssh batch-cluster -i ~/AWS-tutorial.pem 
 ```
 Remember to substitute the above command with your AWS key.
 
@@ -473,27 +522,22 @@ Once you are logged in, run the commands ```awsbqueues``` and ```awsbhosts``` to
 
 ```
 [ec2-user@ip-10-0-0-11 ~]$ awsbqueues
-/usr/lib/python2.7/site-packages/boto3/compat.py:86: PythonDeprecationWarning: Boto3 will no longer support Python 2.7 starting July 15, 2021. To continue receiving service updates, bug fixes, and security updates please upgrade to Python 3.6 or later. More information can be found here: https://aws.amazon.com/blogs/developer/announcing-end-of-support-for-python-2-7-in-aws-sdk-for-python-and-aws-cli-v1/
-  warnings.warn(warning, PythonDeprecationWarning)
 jobQueueName              status
 ------------------------  --------
 JobQueue-05db6c48e4a87f5  VALID
 [ec2-user@ip-10-0-0-11 ~]$ awsbhosts
-/usr/lib/python2.7/site-packages/boto3/compat.py:86: PythonDeprecationWarning: Boto3 will no longer support Python 2.7 starting July 15, 2021. To continue receiving service updates, bug fixes, and security updates please upgrade to Python 3.6 or later. More information can be found here: https://aws.amazon.com/blogs/developer/announcing-end-of-support-for-python-2-7-in-aws-sdk-for-python-and-aws-cli-v1/
-  warnings.warn(warning, PythonDeprecationWarning)
 ec2InstanceId        instanceType    privateIpAddress    publicIpAddress      runningJobs
 -------------------  --------------  ------------------  -----------------  -------------
-i-01df1e66fceb51b8c  m4.large        10.0.27.81          -                              0
 [ec2-user@ip-10-0-0-11 ~]$ 
 ```
 
-As you can see from the output, we have one single running host. This is due to the value we chose for ```min_vcpus``` in the configuration. If you want to display additional details about the AWS Batch queue and hosts, add the ```-d``` flag to the command.
+If you want to display additional details about the AWS Batch queue and hosts, add the ```-d``` flag to the command.
 
-Logged into the head node, create a file in the ```/shared``` directory named ```mpi_hello_world.c```:
+Logged into the head node, create a file in the ```$HOME``` directory named ```mpi_hello_world.c```:
 
 ```
-cd /shared
-vim mpi_hello_world.c
+cd $HOME
+nano mpi_hello_world.c
 ```
 
 Then, add the following MPI program to the file:
@@ -595,22 +639,24 @@ watch awsbstat -d
 ```
 When the job enters the ```RUNNING``` status, we can look at its output. To show the output of the main node, append ```#0``` to the job id. To show the output of the compute nodes, use ```#1``` and ```#2```.
 
-You can look at the overall statues typing:
+You can look at the overall status by typing:
 ```
 awsbstat -s ALL
 ```
 You might see something like:
 ```
 [ec2-user@ip-10-0-0-11 shared]$ awsbstat -s ALL
-/usr/lib/python2.7/site-packages/boto3/compat.py:86: PythonDeprecationWarning: Boto3 will no longer support Python 2.7 starting July 15, 2021. To continue receiving service updates, bug fixes, and security updates please upgrade to Python 3.6 or later. More information can be found here: https://aws.amazon.com/blogs/developer/announcing-end-of-support-for-python-2-7-in-aws-sdk-for-python-and-aws-cli-v1/
-  warnings.warn(warning, PythonDeprecationWarning)
 jobId                                    jobName        status    startedAt    stoppedAt    exitCode
 ---------------------------------------  -------------  --------  -----------  -----------  ----------
 776c0688-c522-4175-9612-e72d085a70ec *3  submit_mpi_sh  RUNNABLE  -            -            -
 ```
 It means the job is still waiting to be run. If you want to terminate a job before it ends, you can use the ```awsbkill``` command.
 
-Once you completed the tutorial, remember to delete your cluster and all the associated machinery using the [Cost Explorer](https://aws.amazon.com/aws-cost-management/aws-cost-explorer/) we mentioned earlier.
+Once you completed the tutorial, remember to delete your cluster and all the associated machinery
+
+```
+pcluster delete-cluster --cluster-name batch-cluster
+```
 
 ## Placement Group and Performance
 
